@@ -1,0 +1,65 @@
+.program n64
+.define public T1 10
+.define public T2 30
+
+waitForData:
+  jmp !OSRE sendData ; if data received from pico, push it out
+  jmp PIN waitForData ; if the line is high, keep looping to wait
+  jmp receiveData ; line is low, data is being sent from the controller
+
+sendData:
+  set pindirs 0
+  out x, 1
+  set pindirs 1
+  jmp !x do_zero [T1 - 2]
+do_one:
+  set pindirs 0
+  jmp !OSRE sendData [T2 - 3] ; set 1 for 5 cycles (the 6th cycle is on the out line above and jmp takes 1 cycle)
+  jmp sendStop
+do_zero:
+  nop [T2 - T1 - 1]
+  set pindirs 0
+  jmp !OSRE sendData [T1 - 4] ; set 1 for 1 cycle
+  jmp sendStop
+sendStop:
+  set pindirs 1 [T1 - 1]
+  set pindirs 0
+  jmp waitForData
+
+receiveData:
+  set y 31
+getBit:
+  wait 0 pin 0 [T1 * 2] ; wait until the line goes low, then wait until a 1 bit would register as high
+  in pins 1 ; read
+  wait 1 pin 0 ; wait for a 1 if it's a 0 ; nop [T1 * 2 - 3] ; 
+  jmp y-- getBit ; get the next bit
+  nop [T2]
+  jmp waitForData [T2]; or wait for more data
+
+
+% c-sdk {
+#include "hardware/clocks.h"
+#include "hardware/pio.h"
+
+static inline void n64_program_init(PIO pio, uint sm, uint offset, uint pin_n64, pio_sm_config *c) {
+    // pio_sm_set_pins_with_mask(pio, sm, 1 << pin_n64, 1 << pin_n64);
+    pio_sm_set_consecutive_pindirs(pio, sm, pin_n64, 1, false);
+    // gpio_pull_up(pin_n64);
+    pio_gpio_init(pio, pin_n64);
+
+    sm_config_set_in_pins(c, pin_n64);
+    sm_config_set_set_pins(c, pin_n64, 1);
+    sm_config_set_jmp_pin(c, pin_n64);
+    sm_config_set_out_shift(c, false, true, 8);
+    sm_config_set_in_shift(c, false, true, 32);
+
+    int cyclesPerBit = (n64_T1 + n64_T2) / 4;
+    float frequency = 1000000;
+    float clockDiv = clock_get_hz(clk_sys) / (cyclesPerBit * frequency); // pio needs 2 cycles per 1us
+    sm_config_set_clkdiv(c, clockDiv);
+
+    pio_sm_init(pio, sm, offset, c);
+    pio_sm_set_enabled(pio, sm, true);
+}
+
+%}
