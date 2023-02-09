@@ -7,7 +7,6 @@
 #define SwitchDescriptors_h
 
 #include <stdint.h>
-#include "N64Controller.h"
 
 #define SWITCH_ENDPOINT_SIZE 64
 
@@ -56,11 +55,6 @@ typedef struct __attribute((packed, aligned(1))) {
 class SwitchDescriptors {
   public:
     SwitchReport *getSwitchReport(uint32_t n64State);
-	private:
-		int8_t maxX = 60;
-		int8_t minX = -60;
-		int8_t maxY = 60;
-		int8_t minY = -60;
 };
 
 static const uint8_t switch_string_language[]     = { 0x09, 0x04 };
