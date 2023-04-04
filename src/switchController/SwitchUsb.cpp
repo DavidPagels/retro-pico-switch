@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2019 Ha Thach (tinyusb.org)
@@ -23,48 +23,74 @@
  *
  */
 
-#include "tusb.h"
-#include "SwitchDescriptors.h"
+#include "SwitchUsb.h"
+
 #include <string.h>
+
+#include "tusb.h"
 
 // Invoked when received GET DEVICE DESCRIPTOR
 // Application return pointer to descriptor
-uint8_t const * tud_descriptor_device_cb(void) {
-  return switch_device_descriptor;
+uint8_t const *tud_descriptor_device_cb(void) {
+  return switch_usb_device_descriptor;
 }
 
 static uint16_t _desc_str[32];
 
+void SwitchUsb::init() {
+  tusb_init();
+  while (true) {
+    try {
+      _controller->getSwitchUsbReport(&_switchUsbReport);
+      tud_task();
+      if (tud_suspended()) {
+        tud_remote_wakeup();
+      }
+      if (tud_hid_ready()) {
+        tud_hid_report(0, &_switchUsbReport, sizeof(SwitchUsbReport));
+      }
+    } catch (int e) {
+      tud_task();
+      if (tud_suspended()) {
+        tud_remote_wakeup();
+      }
+    }
+  }
+}
+
 // Invoked when received GET STRING DESCRIPTOR request
-// Application return pointer to descriptor, whose contents must exist long enough for transfer to complete
-uint16_t const* tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
-  (void) langid;
+// Application return pointer to descriptor, whose contents must exist long
+// enough for transfer to complete
+uint16_t const *tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
+  (void)langid;
 
   uint8_t chr_count;
 
-  if ( index == 0) {
-    memcpy(&_desc_str[1], switch_string_descriptors[0], 2);
+  if (index == 0) {
+    memcpy(&_desc_str[1], switch_usb_string_descriptors[0], 2);
     chr_count = 1;
   } else {
     // Note: the 0xEE index string is a Microsoft OS 1.0 Descriptors.
     // https://docs.microsoft.com/en-us/windows-hardware/drivers/usbcon/microsoft-defined-usb-descriptors
 
-    if ( !(index < sizeof(switch_string_descriptors)/sizeof(switch_string_descriptors[0])) ) return NULL;
+    if (!(index < sizeof(switch_usb_string_descriptors) /
+                      sizeof(switch_usb_string_descriptors[0])))
+      return NULL;
 
-    const char* str = (char *)switch_string_descriptors[index];
+    const char *str = (char *)switch_usb_string_descriptors[index];
 
     // Cap at max char
-    chr_count = (uint8_t) strlen(str);
-    if ( chr_count > 31 ) chr_count = 31;
+    chr_count = (uint8_t)strlen(str);
+    if (chr_count > 31) chr_count = 31;
 
     // Convert ASCII string into UTF-16
-    for(uint8_t i=0; i<chr_count; i++) {
-      _desc_str[1+i] = str[i];
+    for (uint8_t i = 0; i < chr_count; i++) {
+      _desc_str[1 + i] = str[i];
     }
   }
 
   // first byte is length (including header), second byte is string type
-  _desc_str[0] = (uint16_t) ((0x03 << 8 ) | (2*chr_count + 2));
+  _desc_str[0] = (uint16_t)((0x03 << 8) | (2 * chr_count + 2));
 
   return _desc_str;
 }
@@ -76,9 +102,9 @@ uint16_t const* tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
 // Invoked when received GET HID REPORT DESCRIPTOR
 // Application return pointer to descriptor
 // Descriptor contents must exist long enough for transfer to complete
-uint8_t const * tud_hid_descriptor_report_cb(uint8_t itf) {
-  (void) itf;
-  return switch_report_descriptor;
+uint8_t const *tud_hid_descriptor_report_cb(uint8_t itf) {
+  (void)itf;
+  return switch_usb_report_descriptor;
 }
 
 //--------------------------------------------------------------------+
@@ -88,30 +114,32 @@ uint8_t const * tud_hid_descriptor_report_cb(uint8_t itf) {
 // Invoked when received GET CONFIGURATION DESCRIPTOR
 // Application return pointer to descriptor
 // Descriptor contents must exist long enough for transfer to complete
-uint8_t const * tud_descriptor_configuration_cb(uint8_t index) {
-  (void) index; // for multiple configurations
-  return switch_configuration_descriptor;
+uint8_t const *tud_descriptor_configuration_cb(uint8_t index) {
+  (void)index;  // for multiple configurations
+  return switch_usb_configuration_descriptor;
 }
 
-uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t *buffer, uint16_t reqlen) {
-	// TODO: Handle the correct report type, if required
-	(void)itf;
-	(void)report_id;
-	(void)report_type;
-	(void)reqlen;
+uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id,
+                               hid_report_type_t report_type, uint8_t *buffer,
+                               uint16_t reqlen) {
+  // TODO: Handle the correct report type, if required
+  (void)itf;
+  (void)report_id;
+  (void)report_type;
+  (void)reqlen;
 
-	uint8_t report_size = 0;
-	SwitchReport switch_report;
-	report_size = sizeof(SwitchReport);
-	memcpy(buffer, &switch_report, report_size);
-	return report_size;
+  uint8_t report_size = 0;
+  SwitchUsbReport switch_report;
+  report_size = sizeof(SwitchUsbReport);
+  memcpy(buffer, &switch_report, report_size);
+  return report_size;
 }
 
-void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t const *buffer, uint16_t bufsize) {
-	(void) itf;
+void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id,
+                           hid_report_type_t report_type, uint8_t const *buffer,
+                           uint16_t bufsize) {
+  (void)itf;
 
-	// echo back anything we received from host
-	tud_hid_report(report_id, buffer, bufsize);
+  // echo back anything we received from host
+  tud_hid_report(report_id, buffer, bufsize);
 }
-
-
