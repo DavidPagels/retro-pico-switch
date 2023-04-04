@@ -5,6 +5,7 @@
 - [Description](#description)
 - [Inspiration](#inspiration)
 - [Update](#update)
+- [Update 2](#update-2)
 - [Setup](#setup)
 - [3D Printed Enclosure/Plug](#3d-printed-enclosureplug)
 - [Credits](#credits)
@@ -17,18 +18,23 @@ This code allows a Raspberry Pi Pico to control a Nintendo Switch using button a
 
 ## Inspiration
 
-It's been a year since I published the [N64-Arduino-Switch](https://github.com/DavidPagels/n64-arduino-switch) project. Since then, the wireless N64 Nintendo Switch controllers have still been largely out of stock and scalped. One of the pieces of feedback from the last project is that it looked intimidating to setup. I've since discovered the Raspberry Pi Pico and decided to redo this project for the Pico. This has 2 advantages over the Arduino project:
+It's been a year since I published the [N64-Arduino-Switch](https://github.com/DavidPagels/n64-arduino-switch) project. Since then, the wireless N64 Nintendo Switch controllers have still been largely out of stock and scalped. One of the pieces of feedback from the last project is that it looked intimidating to setup. I've since discovered the Raspberry Pi Pico and decided to redo this project for the Pico. This has 3 advantages over the Arduino project:
   
 - Programming involves plugging in a Micro USB cable while holding a button, dragging and dropping a file, and you're done! No more installing a Device Firmware Update (DFU) programmer, installing extra libraries, or shorting pins to get the device into a DFU mode.
 - The Pico only costs $4 instead of $10 for an off-brand, slower Arduino!
+- For 2 more dollars than a base Pico, the Pico W microcontroller supports Bluetooth!
 
 Also, when playing through The Legend of Zelda: Ocarina of Time last year on the Arduino version, it was annoying not having a way to go to the Switch's Home screen using the N64 controller. Since I didn't rely on a library to handle N64 controller communication this time, I found out that there is a special 'Reset' bit that's set when L + R + Start are held at the same time. This project maps that input to the Home button on the Switch!
 
 ## Update
 
-This project no longer only supports the N64 controller, but now supports Gamecube controllers too! I've created two button mappings for the Gamecube controller - a one-to-one mapping, and a mapping that makes the controls as close as possible to the original Super Mario Sunshine mappings. For example, the Switch port has dives mapped to Y, but this maps it back to B. Unfortunately, since the Switch doesn't support analog triggers, a light trigger press maps to ZL/ZR, and full trigger presses map to ZL/R button presses. The Z button on the Gamecube controller maps to L.
+This project no longer only supports the N64 controller, but now supports Gamecube controllers too!
 
 Both N64 and Gamecube versions have L + R + Start mapped to the Switch home button. They also both have dynamic scaling on each axis of each analog joystick to account for reduced joystick range on old controllers.
+
+## Update 2
+
+Shortly after the last update, the Pico SDK was updated to include beta Bluetooth support. This project now supports connecting to a Nintendo Switch via USB or Bluetooth! This is my first project with Bluetooth, so this first iteration requires you to connect to a Switch in the 'Change Grip/Order' menu. If the Pico becomes disconnected, it may also have to be power cycled to get it to pair with the Switch again. I hope to improve the project so you only have to do this the first time you connect to a Switch, and so it automatically reconnects without power cycling. Also, while the Pico wirelessly connects to the Switch, it will still need to be powered via USB (any USB port - a battery bank should work).
 
 ## Setup
 
@@ -40,7 +46,7 @@ To program the Raspberry Pi Pico
 4. Drag and drop the .uf2 file to the Pico folder from step 2.
 5. Done!
 
-Once these steps are done, [wire up your N64 controller](https://github.com/pothos/arduino-n64-controller-library/blob/master/README.md#wireing) or [your Gamecube controller](https://simplecontrollers.com/blogs/resources/gamecube-protocol). The pre-built .uf2 file assumes the data pin is on the Pico's [GP18 pin](https://datasheets.raspberrypi.com/pico/Pico-R3-A4-Pinout.pdf).
+Once these steps are done, [wire up your N64 controller](https://github.com/pothos/arduino-n64-controller-library/blob/master/README.md#wireing) or [your Gamecube controller](https://simplecontrollers.com/blogs/resources/gamecube-protocol). The pre-built .uf2 file assumes the data pin is on the Pico's [GP18 pin](https://datasheets.raspberrypi.com/pico/Pico-R3-A4-Pinout.pdf). A 1k pullup resistor should also be wired between 3.3v and your data pin to work properly.
 
 ## 3D Printed Enclosure/Plug
 
@@ -53,4 +59,4 @@ I've also designed a small enclosure to house the Pico and act as a plug for a s
 
 ## Credits
 
-This project would have taken a lot longer without the work done by everyone credited in the original [N64-Arduino-Switch](https://github.com/DavidPagels/n64-arduino-switch) project along with the creators and contributors of [TinyUsb](https://github.com/hathach/tinyusb), the [GP2040-CE](https://github.com/OpenStickCommunity/GP2040-CE) project, and the [MPG](https://github.com/OpenStickCommunity/MPG) project. If you're into developing this sort of stuff, definitely check their stuff out!
+This project would have taken a lot longer without the work done by everyone credited in the original [N64-Arduino-Switch](https://github.com/DavidPagels/n64-arduino-switch) project along with the creators and contributors of [TinyUsb](https://github.com/hathach/tinyusb), the [GP2040-CE](https://github.com/OpenStickCommunity/GP2040-CE) project, and the [MPG](https://github.com/OpenStickCommunity/MPG) project. Figuring out how to interface via Bluetooth also took me 1.5 months of work in my off time and would have taken even longer without the work done by Brikwerk on the [nxbt](https://github.com/Brikwerk/nxbt) project. If you're into developing this sort of stuff, definitely check their stuff out!
