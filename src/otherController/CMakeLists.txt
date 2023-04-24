@@ -1,5 +1,6 @@
-add_library(controller INTERFACE)
-target_link_libraries(controller INTERFACE pico_stdlib hardware_pio)
+add_library(controller Controller.cpp)
+target_link_libraries(controller pico_stdlib hardware_pio)
+target_include_directories(controller PUBLIC ${PROJECT_SOURCE_DIR}/include)
 add_subdirectory(gamecube)
 add_subdirectory(n64)
 pico_generate_pio_header(controller ${CMAKE_CURRENT_LIST_DIR}/Controller.pio)

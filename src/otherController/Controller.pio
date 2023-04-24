@@ -4,7 +4,11 @@
 .define public T2 12
 
 .wrap_target
-  out y, 5 side 0 ; load # of bytes expected in response
+  out y, 8 side 0 ; load # of bytes expected in response
+  nop [7]
+  nop [7]
+  nop [7]
+  nop [7]
 sendData:
   out x, 1  side 0 [T1 - 1]; send data bit by bit
   jmp !x do_zero side 1 [T1 - 1] ; set 0 for 4 cycles
@@ -41,12 +45,12 @@ static inline void controller_program_init(PIO pio, uint sm, uint offset, uint p
     sm_config_set_in_pins(c, pin_controller);
     sm_config_set_sideset_pins(c, pin_controller);
     sm_config_set_jmp_pin(c, pin_controller);
-    sm_config_set_out_shift(c, false, true, 13);
+    sm_config_set_out_shift(c, false, true, 8);
     sm_config_set_in_shift(c, false, true, 8);
 
     int cyclesPerBit = (controller_T1 + controller_T2) / 4;
     float frequency = 1000000;
-    float clockDiv = clock_get_hz(clk_sys) / (cyclesPerBit * frequency); // pio needs 2 cycles per 1us
+    float clockDiv = clock_get_hz(clk_sys) / (cyclesPerBit * frequency);
     sm_config_set_clkdiv(c, clockDiv);
 
     pio_sm_init(pio, sm, offset, c);

@@ -3,9 +3,9 @@
 ## Table of Contents
 
 - [Description](#description)
+- [Features](#features)
 - [Inspiration](#inspiration)
-- [Update](#update)
-- [Update 2](#update-2)
+- [Bluetooth](#bluetooth)
 - [Setup](#setup)
 - [3D Printed Enclosure/Plug](#3d-printed-enclosureplug)
 - [Credits](#credits)
@@ -15,6 +15,17 @@
 ## Description
 
 This code allows a Raspberry Pi Pico to control a Nintendo Switch using button and joystick inputs from an original N64 or Gamecube controller. This is a spiritual successor to my [N64-Arduino-Switch](https://github.com/DavidPagels/n64-arduino-switch) project.
+
+## Features
+
+Here's a list of some of the larger features of this project
+
+- Connects to a Nintendo Switch via USB or Bluetooth.
+- Also works with any platform that supports Nintendo Switch Pro controllers.
+- Auto-detects whether the controller is N64 or Gamecube.
+- Dynamically scales each axis of each analog joystick to account for reduced joystick range on old controllers.
+- L + R + Start are mapped to the Switch home button.
+- Supports rumble on Gamecube controllers and N64 controllers with Rumble Paks.
 
 ## Inspiration
 
@@ -26,15 +37,9 @@ It's been a year since I published the [N64-Arduino-Switch](https://github.com/D
 
 Also, when playing through The Legend of Zelda: Ocarina of Time last year on the Arduino version, it was annoying not having a way to go to the Switch's Home screen using the N64 controller. Since I didn't rely on a library to handle N64 controller communication this time, I found out that there is a special 'Reset' bit that's set when L + R + Start are held at the same time. This project maps that input to the Home button on the Switch!
 
-## Update
+## Bluetooth
 
-This project no longer only supports the N64 controller, but now supports Gamecube controllers too!
-
-Both N64 and Gamecube versions have L + R + Start mapped to the Switch home button. They also both have dynamic scaling on each axis of each analog joystick to account for reduced joystick range on old controllers.
-
-## Update 2
-
-Shortly after the last update, the Pico SDK was updated to include beta Bluetooth support. This project now supports connecting to a Nintendo Switch via USB or Bluetooth! This is my first project with Bluetooth, so this first iteration requires you to connect to a Switch in the 'Change Grip/Order' menu. If the Pico becomes disconnected, it may also have to be power cycled to get it to pair with the Switch again. I hope to improve the project so you only have to do this the first time you connect to a Switch, and so it automatically reconnects without power cycling. Also, while the Pico wirelessly connects to the Switch, it will still need to be powered via USB (any USB port - a battery bank should work).
+This is my first project with Bluetooth, so the current version requires you to connect to a Switch in the 'Change Grip/Order' menu. If the Pico becomes disconnected, it may also have to be power cycled to get it to pair with the Switch again. I hope to improve the project so you only have to do this the first time you connect to a Switch, and so it automatically reconnects without power cycling. Also, while the Pico wirelessly connects to the Switch, it will still need to be powered via USB (any USB port - a battery bank should work).
 
 ## Setup
 
@@ -46,7 +51,7 @@ To program the Raspberry Pi Pico
 4. Drag and drop the .uf2 file to the Pico folder from step 2.
 5. Done!
 
-Once these steps are done, [wire up your N64 controller](https://github.com/pothos/arduino-n64-controller-library/blob/master/README.md#wireing) or [your Gamecube controller](https://simplecontrollers.com/blogs/resources/gamecube-protocol). The pre-built .uf2 file assumes the data pin is on the Pico's [GP18 pin](https://datasheets.raspberrypi.com/pico/Pico-R3-A4-Pinout.pdf). A 1k pullup resistor should also be wired between 3.3v and your data pin to work properly.
+Once these steps are done, [wire up your N64 controller](https://github.com/pothos/arduino-n64-controller-library/blob/master/README.md#wireing) or [your Gamecube controller](https://simplecontrollers.com/blogs/resources/gamecube-protocol) (pins 1 & 4 only required for rumble support). The pre-built .uf2 file assumes the data pin is on the Pico's [GP18 pin](https://datasheets.raspberrypi.com/pico/Pico-R3-A4-Pinout.pdf). A 1k pullup resistor should also be wired between 3.3v and your data pin to work properly.
 
 ## 3D Printed Enclosure/Plug
 

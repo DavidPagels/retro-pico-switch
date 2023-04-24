@@ -6,17 +6,15 @@
 
 class GamecubeController : public Controller {
  public:
-  GamecubeController(uint8_t pin) : Controller(pin, 10){};
+  GamecubeController(InitParams *initParams) : Controller(initParams, 8){};
   void init();
-  void getSwitchUsbReport(SwitchUsbReport *switchUsbReport);
-  void getSwitchBtReport(SwitchBtReport *switchBtReport);
+  void getSwitchReport(SwitchReport *switchReport);
+  void setRumble(bool rumble) { _rumble = rumble; };
 
  private:
   void updateState();
-  uint16_t convertToSwitchUsbJoystick(uint8_t axisPos, double *minAxis,
-                                      double *maxAxis);
-  uint16_t convertToSwitchBtJoystick(uint8_t axisPos, double *minAxis,
-                                     double *maxAxis);
+  uint16_t convertToSwitchJoystick(uint8_t axisPos, double *minAxis,
+                                   double *maxAxis);
   double _maxAnalogX = 0.5;
   double _minAnalogX = -0.5;
   double _maxAnalogY = 0.5;

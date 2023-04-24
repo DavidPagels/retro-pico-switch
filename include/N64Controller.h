@@ -5,17 +5,17 @@
 
 class N64Controller : public Controller {
  public:
-  N64Controller(uint8_t pin) : Controller(pin, 4){};
+  N64Controller(InitParams *initParams) : Controller(initParams, 4){};
   void init();
-  void getSwitchUsbReport(SwitchUsbReport *switchUsbReport);
-  uint16_t convertToSwitchUsbJoystick(int8_t axisPos, double *minAxis,
-                                      double *maxAxis);
-  void getSwitchBtReport(SwitchBtReport *switchBtReport);
-  uint16_t convertToSwitchBtJoystick(int8_t axisPos, double *minAxis,
-                                     double *maxAxis);
+  void getSwitchReport(SwitchReport *switchReport);
+  void setRumble(bool rumble);
 
  private:
   void updateState();
+  uint16_t convertToSwitchJoystick(int8_t axisPos, double *minAxis,
+                                   double *maxAxis);
+  void initController();
+  void writeRumble(uint8_t writeVal);
   double _maxX = 0.5;
   double _minX = -0.5;
   double _maxY = 0.5;

@@ -25,14 +25,13 @@ const btstack_chipset_t *btstack_chipset_cyw43_instance(void) {
   return &btstack_chipset_cyw43;
 }
 
-void create_sdp_hid_record(uint8_t *service, uint32_t service_record_handle,
-                           const hid_sdp_record_t *params) {
+void create_sdp_hid_record(uint8_t *service, const hid_sdp_record_t *params) {
   uint8_t *attribute;
   de_create_sequence(service);
 
   de_add_number(service, DE_UINT, DE_SIZE_16,
                 BLUETOOTH_ATTRIBUTE_SERVICE_RECORD_HANDLE);
-  de_add_number(service, DE_UINT, DE_SIZE_32, service_record_handle);
+  de_add_number(service, DE_UINT, DE_SIZE_32, 0x10000);
 
   de_add_number(service, DE_UINT, DE_SIZE_16,
                 BLUETOOTH_ATTRIBUTE_SERVICE_CLASS_ID_LIST);
@@ -212,16 +211,16 @@ void create_sdp_hid_record(uint8_t *service, uint32_t service_record_handle,
   de_add_number(service, DE_BOOL, DE_SIZE_8, params->hid_boot_device ? 1 : 0);
 }
 
-void create_sdp_pnp_record(uint8_t *service, uint32_t service_record_handle,
-                           uint16_t vendor_id_source, uint16_t vendor_id,
-                           uint16_t product_id, uint16_t version) {
+void create_sdp_pnp_record(uint8_t *service, uint16_t vendor_id_source,
+                           uint16_t vendor_id, uint16_t product_id,
+                           uint16_t version) {
   uint8_t *attribute;
   de_create_sequence(service);
 
   // 0x0000 "Service Record Handle"
   de_add_number(service, DE_UINT, DE_SIZE_16,
                 BLUETOOTH_ATTRIBUTE_SERVICE_RECORD_HANDLE);
-  de_add_number(service, DE_UINT, DE_SIZE_32, service_record_handle);
+  de_add_number(service, DE_UINT, DE_SIZE_32, 0x10001);
 
   // 0x0001 "Service Class ID List"
   de_add_number(service, DE_UINT, DE_SIZE_16,

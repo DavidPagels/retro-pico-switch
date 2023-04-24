@@ -1,8 +1,8 @@
-add_library(switchUsb SwitchUsb.cpp)
-target_link_libraries(switchUsb pico_stdlib hardware_pio tinyusb_device)
+add_library(switchUsb SwitchUsb.cpp SwitchCommon.cpp)
+target_link_libraries(switchUsb pico_stdlib pico_rand hardware_pio tinyusb_device)
 target_include_directories(switchUsb PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-add_library(switchBluetooth SwitchBluetooth.cpp)
+add_library(switchBluetooth SwitchBluetooth.cpp SwitchCommon.cpp)
 target_link_libraries(switchBluetooth 
   pico_stdlib
   pico_rand

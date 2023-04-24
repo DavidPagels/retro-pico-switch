@@ -1,7 +1,6 @@
 # Options:
-# CONTROLLER_TYPE: "Gamecube" or "N64" (default N64)
 # SWITCH_BLUETOOTH: Remove for USB
-add_compile_definitions()
+add_compile_definitions(SWITCH_BLUETOOTH)
 add_subdirectory(otherController)
 add_subdirectory(switchController)
 

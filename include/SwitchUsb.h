@@ -6,25 +6,15 @@
 #ifndef SwitchUsb_h
 #define SwitchUsb_h
 
-#include <stdint.h>
-
-#include "Controller.h"
+#include "SwitchCommon.h"
 #include "SwitchConsts.h"
 
-class SwitchUsb {
+class SwitchUsb : public SwitchCommon {
  public:
-  SwitchUsb(Controller *controller) { _controller = controller; };
-  void init();
+  void init(Controller *controller);
 
  private:
-  Controller *_controller;
-  SwitchUsbReport _switchUsbReport{.buttons = 0,
-                                   .hat = SWITCH_USB_HAT_NOTHING,
-                                   .lx = SWITCH_USB_JOYSTICK_MID,
-                                   .ly = SWITCH_USB_JOYSTICK_MID,
-                                   .rx = SWITCH_USB_JOYSTICK_MID,
-                                   .ry = SWITCH_USB_JOYSTICK_MID,
-                                   .vendor = 0};
+  uint8_t *generate_usb_report();
 };
 
 #endif

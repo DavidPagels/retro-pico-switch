@@ -25,9 +25,10 @@
 
 #include "SwitchUsb.h"
 
-#include <string.h>
-
+#include "pico/rand.h"
 #include "tusb.h"
+
+static uint16_t _desc_str[32];
 
 // Invoked when received GET DEVICE DESCRIPTOR
 // Application return pointer to descriptor
@@ -35,19 +36,65 @@ uint8_t const *tud_descriptor_device_cb(void) {
   return switch_usb_device_descriptor;
 }
 
-static uint16_t _desc_str[32];
+uint8_t *SwitchUsb::generate_usb_report() {
+  set_empty_report();
 
-void SwitchUsb::init() {
+  if (_switchRequestReport[0] == 0x80) {
+    _report[0] = 0x81;
+    _report[1] = _switchRequestReport[1];
+    switch (_switchRequestReport[1]) {
+      case 0x01:
+        _report[3] = 0x03;
+        for (int i = 0; i < 6; i++) {
+          _report[4 + i] = _addr[5 - i];
+        }
+        break;
+      case 0x02:
+      case 0x03:
+        break;
+      default:
+        _report[0] = 0x30;
+        _controller->getSwitchReport(&_switchReport);
+        memcpy(_report + 2, (uint8_t *)&_switchReport, sizeof(SwitchReport));
+        break;
+    }
+    if (_switchRequestReport[0] > 0x00) {
+      set_empty_switch_request_report();
+    }
+    return _report;
+  } else {
+    generate_report();
+    if (_switchRequestReport[0] > 0x00) {
+      set_empty_switch_request_report();
+    }
+    // _report is a bluetooth report starting with 0xA1, which usb skips
+    return _report + 1;
+  }
+};
+
+void SwitchUsb::init(Controller *controller) {
+  _controller = controller;
+  _switchReport.batteryConnection = 0x81;
+  _switchRequestReport[0] = 0x80;
+  _switchRequestReport[1] = 0x01;
+  uint8_t newAddr[] = {0x7c,
+                       0xbb,
+                       0x8a,
+                       (uint8_t)(get_rand_32() % 0xff),
+                       (uint8_t)(get_rand_32() % 0xff),
+                       (uint8_t)(get_rand_32() % 0xff)};
+  memcpy(_addr, newAddr, 6);
   tusb_init();
   while (true) {
+    tud_task();
     try {
-      _controller->getSwitchUsbReport(&_switchUsbReport);
       tud_task();
       if (tud_suspended()) {
         tud_remote_wakeup();
       }
       if (tud_hid_ready()) {
-        tud_hid_report(0, &_switchUsbReport, sizeof(SwitchUsbReport));
+        uint8_t *report = generate_usb_report();
+        tud_hid_report(0, report, 64);
       }
     } catch (int e) {
       tud_task();
@@ -122,24 +169,5 @@ uint8_t const *tud_descriptor_configuration_cb(uint8_t index) {
 uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id,
                                hid_report_type_t report_type, uint8_t *buffer,
                                uint16_t reqlen) {
-  // TODO: Handle the correct report type, if required
-  (void)itf;
-  (void)report_id;
-  (void)report_type;
-  (void)reqlen;
-
-  uint8_t report_size = 0;
-  SwitchUsbReport switch_report;
-  report_size = sizeof(SwitchUsbReport);
-  memcpy(buffer, &switch_report, report_size);
-  return report_size;
-}
-
-void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id,
-                           hid_report_type_t report_type, uint8_t const *buffer,
-                           uint16_t bufsize) {
-  (void)itf;
-
-  // echo back anything we received from host
-  tud_hid_report(report_id, buffer, bufsize);
+  return reqlen;
 }
