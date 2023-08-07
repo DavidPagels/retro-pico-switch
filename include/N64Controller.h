@@ -46,8 +46,19 @@ class N64Controller : public Controller {
 #define N64_MASK_DPAD_UPLEFT 0xA
 
 #define N64_MASK_C_UP 0x8
-#define N64_MASK_C_DOWN 0x4
-#define N64_MASK_C_LEFT 0x2
+#define N64_MASK_C_UPRIGHT 0x9
 #define N64_MASK_C_RIGHT 0x1
+#define N64_MASK_C_DOWNRIGHT 0x5
+#define N64_MASK_C_DOWN 0x4
+#define N64_MASK_C_DOWNLEFT 0x6
+#define N64_MASK_C_LEFT 0x2
+#define N64_MASK_C_UPLEFT 0xA
+#define N64_MASK_C_UPDOWN 0xC
+#define N64_MASK_C_LEFTRIGHT 0x3
+#define N64_MASK_C_UPDOWNLEFT 0xE
+#define N64_MASK_C_UPDOWNRIGHT 0xD
+#define N64_MASK_C_UPLEFTRIGHT 0xB
+#define N64_MASK_C_DOWNLEFTRIGHT 0x7
+#define N64_MASK_C_UPDOWNLEFTRIGHT 0xF
 
 #endif
