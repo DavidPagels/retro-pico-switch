@@ -136,36 +136,36 @@ void N64Controller::getSwitchReport(SwitchReport *switchReport) {
       break;
     case N64_MASK_C_UPDOWN:
       ry = SWITCH_JOYSTICK_MAX;
-      switchReport->buttons[0] = SWITCH_MASK_X;
+      switchReport->buttons[0] |= SWITCH_MASK_X;
       break;
     case N64_MASK_C_LEFTRIGHT:
       rx = SWITCH_JOYSTICK_MAX;
-      switchReport->buttons[0] = SWITCH_MASK_Y;
+      switchReport->buttons[0] |= SWITCH_MASK_Y;
       break;
     case N64_MASK_C_UPDOWNLEFT:
       rx = SWITCH_JOYSTICK_MIN;
       ry = SWITCH_JOYSTICK_MAX;
-      switchReport->buttons[0] = SWITCH_MASK_X;
+      switchReport->buttons[0] |= SWITCH_MASK_X;
       break;
     case N64_MASK_C_UPDOWNRIGHT:
       rx = SWITCH_JOYSTICK_MAX;
       ry = SWITCH_JOYSTICK_MAX;
-      switchReport->buttons[0] = SWITCH_MASK_X;
+      switchReport->buttons[0] |= SWITCH_MASK_X;
       break;
     case N64_MASK_C_UPLEFTRIGHT:
       rx = SWITCH_JOYSTICK_MAX;
       ry = SWITCH_JOYSTICK_MAX;
-      switchReport->buttons[0] = SWITCH_MASK_Y;
+      switchReport->buttons[0] |= SWITCH_MASK_Y;
       break;
     case N64_MASK_C_DOWNLEFTRIGHT:
       rx = SWITCH_JOYSTICK_MAX;
       ry = SWITCH_JOYSTICK_MIN;
-      switchReport->buttons[0] = SWITCH_MASK_Y;
+      switchReport->buttons[0] |= SWITCH_MASK_Y;
       break;
     case N64_MASK_C_UPDOWNLEFTRIGHT:
       rx = SWITCH_JOYSTICK_MAX;
       ry = SWITCH_JOYSTICK_MAX;
-      switchReport->buttons[0] = SWITCH_MASK_X + SWITCH_MASK_Y;
+      switchReport->buttons[0] |= SWITCH_MASK_X + SWITCH_MASK_Y;
       break;
   }
   switchReport->r[0] = rx & 0xff;
