@@ -13,7 +13,6 @@
 #include "btstack_event.h"
 #include "btstack_run_loop.h"
 #include "pico/cyw43_arch.h"
-#include "pico/rand.h"
 #include "pico/stdlib.h"
 
 static uint8_t hid_service_buffer[700];
@@ -23,10 +22,6 @@ static const char hid_device_name[] = "Wireless Gamepad";
 void SwitchBluetooth::init(Controller *controller) {
   _controller = controller;
   _switchReport.batteryConnection = 0x80;
-  bd_addr_t newAddr;
-  cyw43_hal_get_mac(0, (uint8_t*)&newAddr);
-  newAddr[BD_ADDR_LEN - 1]++;
-  memcpy(_addr, newAddr, 6);
   if (cyw43_arch_init()) {
     return;
   }
@@ -37,9 +32,6 @@ void SwitchBluetooth::init(Controller *controller) {
   gap_set_default_link_policy_settings(LM_LINK_POLICY_ENABLE_ROLE_SWITCH |
                                        LM_LINK_POLICY_ENABLE_SNIFF_MODE);
   gap_set_allow_role_switch(true);
-
-  hci_set_chipset(btstack_chipset_cyw43_instance());
-  hci_set_bd_addr(_addr);
 
   // L2CAP
   l2cap_init();
