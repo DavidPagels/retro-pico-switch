@@ -23,12 +23,9 @@ static const char hid_device_name[] = "Wireless Gamepad";
 void SwitchBluetooth::init(Controller *controller) {
   _controller = controller;
   _switchReport.batteryConnection = 0x80;
-  bd_addr_t newAddr = {0x7c,
-                       0xbb,
-                       0x8a,
-                       (uint8_t)(get_rand_32() % 0xff),
-                       (uint8_t)(get_rand_32() % 0xff),
-                       (uint8_t)(get_rand_32() % 0xff)};
+  bd_addr_t newAddr;
+  cyw43_hal_get_mac(0, (uint8_t*)&newAddr);
+  newAddr[BD_ADDR_LEN - 1]++;
   memcpy(_addr, newAddr, 6);
   if (cyw43_arch_init()) {
     return;
