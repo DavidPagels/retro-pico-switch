@@ -76,6 +76,24 @@ The docker file in this project will install all necessary dependencies and run
 the commands necessary to build this project. In the end the generated binary is
 exported to the output folder of the command: "./build"
 
+## Building with the Pico SDK
+
+The Pico SDK must be available at some given location [^1]. In this Linux example, tested with Pico SDK 2.2.0, it is specified by the `PICO_SDK_PATH` environment variable.
+
+```sh
+export PICO_SDK_PATH=/home/user/pico/pico-sdk # as an example
+
+# for Pico W with Bluetooth support
+cmake -B build -DPICO_BOARD=pico_w
+make -C build/
+
+# for Pico with USB only
+cmake -B build -DPICO_BOARD=pico
+make -C build/
+```
+
+[^1]: See "Manually Configure your Environment" in Appendix C of the "Getting started with Raspberry Pi Pico-series" document
+
 ## Credits
 
 This project would have taken a lot longer without the work done by everyone credited in the original [N64-Arduino-Switch](https://github.com/DavidPagels/n64-arduino-switch) project along with the creators and contributors of [TinyUsb](https://github.com/hathach/tinyusb), the [GP2040-CE](https://github.com/OpenStickCommunity/GP2040-CE) project, and the [MPG](https://github.com/OpenStickCommunity/MPG) project. Figuring out how to interface via Bluetooth also took me 1.5 months of work in my off time and would have taken even longer without the work done by Brikwerk on the [nxbt](https://github.com/Brikwerk/nxbt) project. If you're into developing this sort of stuff, definitely check their stuff out!
