@@ -65,12 +65,20 @@ I've also designed a small enclosure to house the Pico and act as a plug for a s
 
 ## Building with Docker
 
-Having docker installed you can build this project yourself by simply running
-the command:
+Having docker installed, you can build this project yourself by simply running
+the command (for Raspberry Pi Pico W):
 
 ```
 docker build --output=./build .
 ```
+
+You can also change the target board by changing the build argument "PICO_BOARD" like this (for Raspberry Pi Pico 2):
+
+```
+docker build --build-arg PICO_BOARD=pico2 --output=./build .
+```
+
+Keep in mind that the Pico 2 (not W variant) will not run with bluetooth, only USB on this build.
 
 The docker file in this project will install all necessary dependencies and run
 the commands necessary to build this project. In the end the generated binary is

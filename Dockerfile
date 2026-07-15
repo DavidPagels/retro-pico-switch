@@ -1,5 +1,5 @@
 # Docker Image Based on https://github.com/lukstep/raspberry-pi-pico-docker-sdk
-FROM ubuntu:24.10 as build
+FROM ubuntu:26.04 AS build
 
 RUN apt-get update -y && \
     apt-get upgrade -y && \
@@ -18,18 +18,19 @@ RUN apt-get update -y && \
 
 # Raspberry Pi Pico SDK
 ARG SDK_PATH=/usr/local/picosdk
-RUN git clone --depth 1 --branch 2.0.0 https://github.com/raspberrypi/pico-sdk $SDK_PATH && \
+RUN git clone --depth 1 https://github.com/raspberrypi/pico-sdk $SDK_PATH && \
     cd $SDK_PATH && \
     git submodule update --init
 
 ENV PICO_SDK_PATH=$SDK_PATH
 
 # Build the Project
+ARG PICO_BOARD=pico_w
 RUN mkdir /app
 WORKDIR /app
 COPY . .
 
-RUN cmake -B build -DPICO_BOARD=pico_w -S .
+RUN cmake -B build -DPICO_BOARD=$PICO_BOARD -S .
 RUN make -C build/
 
 # Separate the Binaries for Exporting
